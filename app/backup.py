@@ -788,6 +788,15 @@ class NauticalBackup:
             "INFO",
         )
 
+        # --- RETENTION COUPLING START ---
+        from retention import remove_old_backups
+        remove_old_backups(
+            retention_count=int(os.environ.get("BACKUP_RETENTION_COUNT")) if os.environ.get("BACKUP_RETENTION_COUNT") else None,
+            retention_days=int(os.environ.get("BACKUP_RETENTION_DAYS")) if os.environ.get("BACKUP_RETENTION_DAYS") else None,
+            dry_run=os.environ.get("DRY_RUN", "False").lower() in ["true", "1", "yes"]
+        )
+        # --- RETENTION COUPLING END ---
+
         if self.env.RUN_ONCE == True:
             self.log_this("RUN_ONCE is true. Exiting...", "INFO")
             subprocess.run("kill -SIGTERM 1", shell=True)  # Quit the container
